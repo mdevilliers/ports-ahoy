@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ports-ahoy-deployment
+  labels:
+    app: ports-ahoy
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: ports-ahoy
+  template:
+    metadata:
+      labels:
+        app: ports-ahoy
+    spec:
+      containers:
+        - image: mdevilliers/ports-ahoy:latest
+          name: ports-ahoy
+          imagePullPolicy: "IfNotPresent"
+          # define a liveness probe that checks every 5 seconds, starting after 5 seconds
+          livenessProbe:
+            httpGet:
+              path: /live
+              port: 8086
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          # define a readiness probe that checks every 5 seconds
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8086
+            periodSeconds: 5
+          ports:
+            - containerPort: 3000
+              protocol: TCP
