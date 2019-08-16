@@ -35,6 +35,7 @@ type remoteCacheService struct {
 	client cacheservice.CacheClient
 }
 
+// Port encapsulates details about a physical coastal port
 type Port struct {
 	Key         string    `json:"key"`
 	Name        string    `json:"name"`
@@ -54,6 +55,7 @@ func New(client cacheservice.CacheClient) *remoteCacheService {
 	return &remoteCacheService{client: client}
 }
 
+// Save saves the store or returns an error
 func (s *remoteCacheService) Save(p Port) error {
 
 	bytes, err := json.Marshal(p)
@@ -78,6 +80,7 @@ func (s *remoteCacheService) Save(p Port) error {
 	return nil
 }
 
+// Get returns a Port or returns an error
 func (s *remoteCacheService) Get(key string) (*Port, error) {
 
 	if key == "" {
