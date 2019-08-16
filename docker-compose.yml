@@ -1,0 +1,33 @@
+version: '2'
+services:
+  ## client_api is a service hosting an HTTP API
+  client_api:
+    ports:
+      - "8000:8000"
+    build:
+      dockerfile: ./build/package/Dockerfile
+      context: .
+    depends_on:
+        - port_domain_service
+    links:
+        - "port_domain_service:cache-service"
+    environment:
+      - CACHE_SERVICE_GRPC_HOST=port_domain_service
+  ## port_domain_service is a server responsible for managing the
+  ## storage and retreival of port data - fronts a redis server for persistence
+  ## code for the service exists here - https://github.com/mdevilliers/cache-service
+  port_domain_service:
+    image: docker.io/mdevilliers/cache-service:v1.0.0
+    ports:
+        - "3000:3000"
+    depends_on:
+        - port_domain_storage_redis
+    links:
+        - "port_domain_storage_redis:redis"
+    environment:
+        - REDIS_MASTER_SERVICE_HOST=redis
+        - REDIS_SLAVE_SERVICE_HOST=redis # NOTE : maps the slave instance to the master instance for local development
+  # port_domain_storage_redis is a redis srver instance
+  # NOTE : data is not persisted
+  port_domain_storage_redis:
+    image: redis:3.2.9

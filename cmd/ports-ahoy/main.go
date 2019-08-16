@@ -4,7 +4,6 @@ import (
 	"os"
 
 	"github.com/mdevilliers/ports-ahoy/internal/env"
-	"github.com/mdevilliers/ports-ahoy/internal/healthcheck"
 	"github.com/mdevilliers/ports-ahoy/internal/logger"
 	"github.com/rs/zerolog"
 	"github.com/spf13/cobra"
@@ -35,19 +34,11 @@ func rootCmd() *cobra.Command {
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 
 			// Setup default logger
-			ll := env.LookUpWithDefaultStr("PORTS-AHOY_LOG_LEVEL", logLevel)
-			uc := env.LookUpWithDefaultBool("PORTS-AHOY_LOG_USE_CONSOLE", useConsole)
-			mv := env.LookUpWithDefaultBool("PORTS-AHOY_LOG_VERBOSE", makeVerbose)
+			ll := env.LookUpWithDefaultStr("PORTS_AHOY_LOG_LEVEL", logLevel)
+			uc := env.LookUpWithDefaultBool("PORTS_AHOY_LOG_USE_CONSOLE", useConsole)
+			mv := env.LookUpWithDefaultBool("PORTS_AHOY_LOG_VERBOSE", makeVerbose)
 
 			log = logger.New(ll, uc, mv)
-			return nil
-		},
-		RunE: func(cmd *cobra.Command, args []string) error {
-
-			// NOTE : this call will block, run as a go routine
-			// when you implement your service.
-			// TODO : configure the healthchecks - remove random failure.
-			healthcheck.Start(log)
 			return nil
 		},
 	}
@@ -56,7 +47,11 @@ func rootCmd() *cobra.Command {
 	pflags.BoolVar(&useConsole, "console", useConsole, "use console log writer")
 	pflags.BoolVarP(&makeVerbose, "verbose", "v", makeVerbose, "verbose logging")
 	pflags.StringVar(&logLevel, "log-level", logLevel, "log level")
+
 	// Add sub commands
 	registerVersionCommand(cmd)
+	registerServerCommand(cmd)
+	registerImportCommand(cmd)
+
 	return cmd
 }
