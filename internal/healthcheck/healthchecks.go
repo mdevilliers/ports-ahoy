@@ -30,6 +30,9 @@ func Start(logger zerolog.Logger) {
 
 	})
 
+	// TODO : healthcheck downstream applications
+	// TODO : healthcheck the port domain service
+
 	// nolint : errcheck
 	go http.ListenAndServe(":8086", health)
 

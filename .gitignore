@@ -33,3 +33,5 @@ _testmain.go
 .env
 .envrc
 .vscode
+
+./ports.json

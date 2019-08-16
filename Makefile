@@ -112,3 +112,12 @@ $(BIN_OUTDIR)/golangci-lint/golangci-lint:
 	chmod +x $(BIN_OUTDIR)/golangci-lint
 	rm -f $(GOLANGCI_LINT_ARCHIVE)
 
+.PHONY: mocks
+# generate mocks
+mocks:
+ifeq ("$(wildcard $(shell which counterfeiter))","")
+	go get github.com/maxbrunsfeld/counterfeiter/v6
+endif
+	counterfeiter -o=./internal/api/mocks/api.go ./internal/api/api.go remoteClient
+	counterfeiter -o=./internal/importer/mocks/importer.go ./internal/importer/importer.go storer
+

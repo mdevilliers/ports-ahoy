@@ -28,6 +28,6 @@ RUN apk update \
 	&& adduser -D -H -G ports-ahoy ports-ahoy
 COPY --from=builder /usr/src/ports-ahoy/ports-ahoy /usr/bin/ports-ahoy
 VOLUME ["/etc/ports-ahoy"]
-ENTRYPOINT ["ports-ahoy"]
+ENTRYPOINT ["ports-ahoy", "server"]
 EXPOSE 3000
 USER ports-ahoy
